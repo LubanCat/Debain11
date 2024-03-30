@@ -374,4 +374,4 @@ rm -rf /sha256sum*
 
 EOF
 
-IMAGE_VERSION=$TARGET ./mk-image.sh 
+source ./mk-image.sh 

@@ -1,8 +1,12 @@
 #!/bin/bash -e
 
 TARGET_ROOTFS_DIR=./binary
-ROOTFSIMAGE=linaro-$IMAGE_VERSION-rootfs.img
 
+if [ $RK_ROOTFS_IMAGE ]; then
+	ROOTFSIMAGE=$RK_ROOTFS_IMAGE
+else
+	ROOTFSIMAGE=linaro-$TARGET-rootfs.img
+fi
 
 echo Making rootfs!
 
