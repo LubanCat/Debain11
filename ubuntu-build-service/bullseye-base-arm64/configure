@@ -20,7 +20,7 @@ lb config \
  --apt-recommends false \
  --apt-secure false \
  --architectures arm64 \
- --archive-areas 'main contrib non-free' \
+ --archive-areas 'main contrib' \
  --backports false \
  --binary-filesystem ext4 \
  --binary-images tar \

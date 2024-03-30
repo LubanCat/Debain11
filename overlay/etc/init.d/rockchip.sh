@@ -44,17 +44,17 @@ install_packages() {
         rk3568|rk3566)
 		MALI=bifrost-g52-g13p0
 		ISP=rkaiq_rk3568
-		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-*.tar -C /
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2.tar -C /
 		;;
         rk3562)
 		MALI=bifrost-g52-g13p0
 		ISP=rkaiq_rk3562
-		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-*.tar -C /
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2.tar -C /
 		;;
         rk3588|rk3588s)
 		ISP=rkaiq_rk3588
 		MALI=valhall-g610-g13p0
-		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2-*.tar -C /
+		[ -e /usr/lib/aarch64-linux-gnu/ ] && tar xvf /rknpu2.tar -C /
 		;;
     esac
 }
@@ -82,6 +82,8 @@ elif [[ $COMPATIBLE =~ "px30" ]]; then
     CHIPNAME="px30"
 elif [[ $COMPATIBLE =~ "rk3128" ]]; then
     CHIPNAME="rk3128"
+elif [[ $COMPATIBLE =~ "rk3528" ]]; then
+    CHIPNAME="rk3528"
 elif [[ $COMPATIBLE =~ "rk3562" ]]; then
     CHIPNAME="rk3562"
 elif [[ $COMPATIBLE =~ "rk3566" ]]; then
@@ -132,14 +134,6 @@ then
 
     if [ -e /usr/bin/gst-launch-1.0 ]; then
         setcap CAP_SYS_ADMIN+ep /usr/bin/gst-launch-1.0
-
-        # Cannot open pixbuf loader module file
-        if [ -e "/usr/lib/arm-linux-gnueabihf" ] ; then
-            /usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/arm-linux-gnueabihf/gdk-pixbuf-2.0/2.10.0/loaders.cache
-            update-mime-database /usr/share/mime/
-        elif [ -e "/usr/lib/aarch64-linux-gnu" ]; then
-            /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders > /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache
-        fi
     fi
 
     if [ -e "/dev/rfkill" ] ; then
@@ -156,13 +150,14 @@ then
         systemctl restart lightdm.service || true
     fi
 
-    systemctl restart rkaiq_3A.service || true
+    if [ -e /usr/lib/systemd/system/rkisp_3A.service ]; then
+        systemctl restart rkisp_3A.service || true
+    elif [ -e /usr/lib/systemd/system/rkaiq_3A.service ]; then
+        systemctl restart rkaiq_3A.service || true
+    fi
 
     touch /usr/local/first_boot_flag
 fi
-
-# enable rkwifbt service
-#service rkwifibt start
 
 # enable async service
 #service async start

@@ -73,6 +73,10 @@ install_packages() {
         MALI=utgard-450
         ISP=rkisp
         ;;
+        rk3128|rk3036)
+        MALI=utgard-400
+        ISP=rkisp
+        ;;
         rk3562)
         MALI=bifrost-g52-g13p0
         ISP=rkaiq_rk3562
@@ -112,12 +116,6 @@ if [ ! -e linaro-bullseye-$TARGET-alip-*.tar.gz ]; then
     exit -1
 fi
 
-finish() {
-    sudo umount $TARGET_ROOTFS_DIR/dev
-    exit -1
-}
-trap finish ERR
-
 echo -e "\033[47;36m Extract image \033[0m"
 sudo rm -rf $TARGET_ROOTFS_DIR
 sudo tar -xpf linaro-bullseye-$TARGET-alip-*.tar.gz
@@ -154,14 +152,6 @@ if [ "$VERSION" == "debug" ]; then
 fi
 
 echo -e "\033[47;36m Change root.....................\033[0m"
-if [ "$ARCH" == "armhf" ]; then
-    sudo cp /usr/bin/qemu-arm-static $TARGET_ROOTFS_DIR/usr/bin/
-elif [ "$ARCH" == "arm64"  ]; then
-    sudo cp /usr/bin/qemu-aarch64-static $TARGET_ROOTFS_DIR/usr/bin/
-fi
-
-sudo mount -o bind /dev $TARGET_ROOTFS_DIR/dev
-
 ID=$(stat --format %u $TARGET_ROOTFS_DIR)
 
 cat << EOF | sudo chroot $TARGET_ROOTFS_DIR
@@ -176,24 +166,21 @@ done
 
 ln -sf /run/resolvconf/resolv.conf /etc/resolv.conf
 
-echo "deb http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
-echo "deb-src http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib non-free" >> /etc/apt/sources.list
+echo "deb http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib" >> /etc/apt/sources.list
+echo "deb-src http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib" >> /etc/apt/sources.list
 
 if [ $MIRROR ]; then
-	mkdir -p /etc/apt/keyrings
-	curl -fsSL https://Embedfire.github.io/keyfile | gpg --dearmor -o /etc/apt/keyrings/embedfire.gpg
-	chmod a+r /etc/apt/keyrings/embedfire.gpg
-	echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian carp-lbc main" | tee /etc/apt/sources.list.d/embedfire-lbc.list > /dev/null
-	echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian $MIRROR main" | tee /etc/apt/sources.list.d/embedfire-$MIRROR.list > /dev/null
+    mkdir -p /etc/apt/keyrings
+    curl -fsSL https://Embedfire.github.io/keyfile | gpg --dearmor -o /etc/apt/keyrings/embedfire.gpg
+    chmod a+r /etc/apt/keyrings/embedfire.gpg
+    echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian carp-lbc main" | tee /etc/apt/sources.list.d/embedfire-lbc.list > /dev/null
+    echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian $MIRROR main" | tee /etc/apt/sources.list.d/embedfire-$MIRROR.list > /dev/null
 fi
 
 export LC_ALL=C.UTF-8
 
 apt-get update
 apt-get upgrade -y
-
-chmod o+x /usr/lib/dbus-1.0/dbus-daemon-launch-helper
-chmod +x /etc/rc.local
 
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
@@ -240,6 +227,7 @@ apt install -fy --allow-downgrades /boot/kerneldeb/* || true
 echo -e "\033[47;36m ----- power management ----- \033[0m"
 \${APT_INSTALL} pm-utils triggerhappy bsdmainutils
 cp /etc/Powermanager/triggerhappy.service  /lib/systemd/system/triggerhappy.service
+sed -i "s/#HandlePowerKey=.*/HandlePowerKey=ignore/" /etc/systemd/logind.conf
 
 echo -e "\033[47;36m ----------- RGA  ----------- \033[0m"
 \${APT_INSTALL} /packages/rga2/*.deb
@@ -257,7 +245,6 @@ if [[ "$TARGET" == "gnome" || "$TARGET" == "xfce" || "$TARGET" == "lxde" ]]; the
     \${APT_INSTALL} /packages/gst-plugins-bad1.0/*.deb
     \${APT_INSTALL} /packages/gst-plugins-good1.0/*.deb
     \${APT_INSTALL} /packages/gst-plugins-ugly1.0/*.deb
-    \${APT_INSTALL} /packages/gst-libav1.0/*.deb
 elif [ "$TARGET" == "lite" ]; then
     echo -e "\033[47;36m ------ Setup Video---------- \033[0m"
     \${APT_INSTALL} /packages/mpp/*
@@ -314,7 +301,7 @@ fi
 if [ -e "/usr/lib/aarch64-linux-gnu" ] ;
 then
 echo -e "\033[47;36m ------- move rknpu2 --------- \033[0m"
-mv /packages/rknpu2/*.tar  /
+mv /packages/rknpu2/rknpu2.tar  /
 fi
 
 echo -e "\033[47;36m ----- Install rktoolkit ----- \033[0m"
@@ -324,6 +311,10 @@ if [[ "$TARGET" == "gnome" || "$TARGET" == "xfce" || "$TARGET" == "lxde" ]]; the
     # set default xinput for fcitx
     sed -i 's/default/fcitx/g' /etc/X11/xinit/xinputrc
 
+    #------------------gl4es------------
+    # echo -e "\033[36m Install gl4es.................... \033[0m"
+    # \${APT_INSTALL} /packages/gl4es/*.deb
+
     echo -e "\033[47;36m Install Chinese fonts.................... \033[0m"
     # Uncomment zh_CN.UTF-8 for inclusion in generation
     sed -i 's/^# *\(zh_CN.UTF-8\)/\1/' /etc/locale.gen
@@ -331,13 +322,6 @@ if [[ "$TARGET" == "gnome" || "$TARGET" == "xfce" || "$TARGET" == "lxde" ]]; the
 
     # Generate locale
     locale-gen
-
-    # Export env vars
-    echo "export LC_ALL=zh_CN.UTF-8" >> ~/.bashrc
-    echo "export LANG=zh_CN.UTF-8" >> ~/.bashrc
-    echo "export LANGUAGE=zh_CN.UTF-8" >> ~/.bashrc
-
-    source ~/.bashrc
 fi
 
 \${APT_INSTALL} ttf-wqy-zenhei fonts-aenigma
@@ -389,7 +373,5 @@ rm -rf /boot/*
 rm -rf /sha256sum*
 
 EOF
-
-sudo umount $TARGET_ROOTFS_DIR/dev
 
 IMAGE_VERSION=$TARGET ./mk-image.sh 

@@ -4,9 +4,11 @@ adduser
 anacron
 apt
 apt-utils
+bash-completion
 bc
 busybox
 binfmt-support
+binutils
 build-essential
 ca-certificates
 console-setup
@@ -18,14 +20,15 @@ gpiod
 initramfs-tools
 initscripts
 input-utils
-#idlestat
-#kbd
+idlestat
+kbd
 kmod
 locales
 lsb-release
 lsof
 libgpiod-dev
 makedev
+manpages-dev
 mawk
 mutrace
 netbase
@@ -54,8 +57,10 @@ mesa-utils
 mesa-utils-extra
 systemd-sysv
 acpi-support-base
+
 ## system tools
 bzip2
+can-utils
 curl
 evtest
 gdisk
@@ -63,7 +68,7 @@ htop
 i2c-tools
 less
 iotop
-#lm-sensors
+lm-sensors
 parted
 unzip
 usb-modeswitch
@@ -77,8 +82,10 @@ zip
 ntp
 ntfs-3g
 rcconf
+
 ## bluetooth
 bluez
+
 ## sound
 alsa-utils
 pulseaudio-module-bluetooth
@@ -91,7 +98,7 @@ ffmpeg
 crda
 ethtool
 dnsmasq-base
-#hostapd
+hostapd
 ifupdown
 iperf
 iperf3
@@ -104,6 +111,7 @@ net-tools
 rfkill
 wireless-tools
 wpasupplicant
+
 ## desktop
 network-manager
 network-manager-gnome
@@ -130,8 +138,6 @@ flameshot
 gedit
 
 
-
-can-utils
 cmake
 git
 gstreamer1.0-plugins-ugly

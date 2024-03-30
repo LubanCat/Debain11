@@ -1,5 +1,6 @@
 #!/bin/bash
 
+DIR_AUDIO=`dirname $0`
 device_1=$1
 device_2=$2
 
@@ -106,7 +107,7 @@ case $TEST_CASE in
 		loop_capture $device_1
 	;;
 	"2")
-		source ./test_loopback.sh $device_1 $device_2
+		bash ${DIR_AUDIO}/test_loopback.sh $device_1 $device_2
 	;;
 	"q")
 		echo "Exit audio test"

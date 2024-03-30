@@ -5,15 +5,14 @@
 . "${PM_FUNCTIONS}"
 
 case "$1" in
-       hibernate|suspend)
+	hibernate|suspend)
 		hciconfig hci0 down
 		ifconfig wlan0 down
-               ;;
-       thaw|resume)
-		kilall brcm_patchram_plus1
+		;;
+	thaw|resume)
 		ifconfig wlan0 up
-		bt_pcba_test&
-               ;;
-       *) exit $NA
-               ;;
+		wifibt-init.sh
+		;;
+	*) exit $NA
+		;;
 esac

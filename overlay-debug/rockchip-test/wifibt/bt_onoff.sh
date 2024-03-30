@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function test_bt() {
-	bt_pcba_test
+	wifibt-init.sh
 	sleep 5
 	hciconfig hci0 up && hciconfig -a | grep UP
 	if [ $? -ne 0 ];then

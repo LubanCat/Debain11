@@ -87,7 +87,7 @@ board_info() {
                 ;;
             *)
                 echo "Device ID Error !!!"
-                BOARD_NAME='LubanCat-series.dtb'
+                BOARD_NAME='LubanCat-RK356X'
                 BOARD_DTB='rk356x-lubancat-rk_series.dtb'
                 BOARD_uEnv='uEnvLubanCat-series.txt'
                 ;;
@@ -95,13 +95,13 @@ board_info() {
     elif [[ "$2" == "rk3562" ]]; then
 		case $1 in
             0000)
-                BOARD_NAME='LubanCat-A2IO'
-                BOARD_DTB='rk3562-lubancat-a2io.dtb'
-                BOARD_uEnv='uEnvLubanCatA2IO.txt'
+                BOARD_NAME='LubanCat-1HS'
+                BOARD_DTB='rk3562-lubancat-1hs.dtb'
+                BOARD_uEnv='uEnvLubanCat1HS.txt'
                 ;;
 			*)
 				echo "Device ID Error !!!"
-				BOARD_NAME='LubanCat-series.dtb'
+				BOARD_NAME='LubanCat-RK3562'
 				BOARD_DTB='rk3562-lubancat-rk_series.dtb'
 				BOARD_uEnv='uEnvLubanCat-series.txt'
 				;;	
@@ -145,7 +145,7 @@ board_info() {
                 ;;
             *)
                 echo "Device ID Error !!!"
-                BOARD_NAME='LubanCat-series.dtb'
+                BOARD_NAME='LubanCat-RK3588'
                 BOARD_DTB='rk3588-lubancat-rk_series.dtb'
                 BOARD_uEnv='uEnvLubanCat-series.txt'
                 ;;

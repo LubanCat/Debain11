@@ -4,9 +4,11 @@ adduser
 anacron
 apt
 apt-utils
+bash-completion
 bc
 busybox
 binfmt-support
+binutils
 build-essential
 ca-certificates
 console-setup
@@ -26,6 +28,7 @@ lsb-release
 lsof
 libgpiod-dev
 makedev
+manpages-dev
 mawk
 mutrace
 netbase
@@ -55,7 +58,6 @@ mesa-utils-extra
 systemd-sysv
 acpi-support-base
 
-
 ## system tools
 bzip2
 can-utils
@@ -81,10 +83,8 @@ ntp
 ntfs-3g
 rcconf
 
-
 ## bluetooth
 bluez
-
 
 ## sound
 alsa-utils
@@ -111,7 +111,6 @@ net-tools
 rfkill
 wireless-tools
 wpasupplicant
-
 
 ## desktop
 #x11相关
@@ -179,7 +178,6 @@ blueman
 
 #软件包管理器
 synaptic
-
 
 ## desktop applications
 #浏览器
