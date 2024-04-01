@@ -8,6 +8,8 @@ if [ ! $SOC ]; then
     echo "please enter soc number:"
     echo "请输入要构建CPU的序号:"
     echo "[0] Exit Menu"
+    echo "[1] rk3528"
+    echo "[1] rk3562"
     echo "[1] rk3566/rk3568"
     echo "[2] rk3588/rk3588s"
     echo "---------------------------------------------------------"
@@ -17,9 +19,15 @@ if [ ! $SOC ]; then
         0)
             exit;;
         1)
-            SOC=rk356x
+            SOC=rk3528
             ;;
         2)
+            SOC=rk3562
+            ;;
+        3)
+            SOC=rk356x
+            ;;
+        4)
             SOC=rk3588
             ;;
         *)
@@ -185,7 +193,11 @@ apt-get upgrade -y
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 echo -e "\033[47;36m ---------- LubanCat -------- \033[0m"
-\${APT_INSTALL} toilet mpv fire-config u-boot-tools edid-decode logrotate
+if [ $MIRROR ]; then
+    \${APT_INSTALL} fire-config
+fi
+
+\${APT_INSTALL} toilet mpv u-boot-tools edid-decode logrotate
 
 pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple setuptools wheel
 pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple python-periphery Adafruit-Blinka
