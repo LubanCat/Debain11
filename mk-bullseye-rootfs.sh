@@ -119,14 +119,14 @@ fi
 
 echo -e "\033[47;36m Building for $VERSION \033[0m"
 
-if [ ! -e linaro-bullseye-$TARGET-alip-*.tar.gz ]; then
+if [ ! -e linaro-bullseye-$TARGET-$ARCH-alip-*.tar.gz ]; then
     echo "\033[41;36m Run mk-base-debian.sh first \033[0m"
     exit -1
 fi
 
 echo -e "\033[47;36m Extract image \033[0m"
 sudo rm -rf $TARGET_ROOTFS_DIR
-sudo tar -xpf linaro-bullseye-$TARGET-alip-*.tar.gz
+sudo tar -xpf linaro-bullseye-$TARGET-$ARCH-alip-*.tar.gz
 
 # packages folder
 sudo mkdir -p $TARGET_ROOTFS_DIR/packages
@@ -197,7 +197,7 @@ if [ $MIRROR ]; then
     \${APT_INSTALL} fire-config
 fi
 
-\${APT_INSTALL} toilet mpv u-boot-tools edid-decode logrotate
+\${APT_INSTALL} toilet mpv u-boot-tools edid-decode logrotate stress
 
 pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple setuptools wheel
 pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple python-periphery Adafruit-Blinka
