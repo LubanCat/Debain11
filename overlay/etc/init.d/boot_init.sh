@@ -2,7 +2,21 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 board_info() {
-	if [[ "$2" == "rk3528" ||  "$2" == "rk3528a" ]]; then
+	if [[ "$2" == "rk3128" ]]; then
+		case $1 in
+			0000)
+				BOARD_NAME='LubanCat-0H'
+				BOARD_DTB='rk3128-lubancat-0h.dtb'
+				BOARD_uEnv='uEnvLubanCat0H.txt'
+				;;
+			*)
+				echo "Device ID Error !!!"
+				BOARD_NAME='LubanCat-RK3128'
+				BOARD_DTB='rk3128-lubancat-generic.dtb'
+				BOARD_uEnv='uEnvLubanCat.txt'
+				;;
+		esac
+	elif [[ "$2" == "rk3528" ||  "$2" == "rk3528a" ]]; then
 		case $1 in
 			0001)
 				BOARD_NAME='LubanCat-Q1'
@@ -172,10 +186,14 @@ board_info() {
 }
 
 # voltage_scale
-# 1.7578125 8bit
-# 0.439453125 12bit
+# 1.7578125 1.8v/10bit
+# 3.222656250 3.3v/10bit 
+# 0.439453125 1.8v/12bit
+# 0.8056640625 3.3v/12bit
 get_index(){
-	ADC_RAW=$1
+
+	ADC_RAW=$(cat /sys/bus/iio/devices/iio\:device0/in_voltage${1}_raw)
+	echo ADC_CH:$1 ADC_RAW:$ADC_RAW
 	INDEX=0xff
 
 	if [ $(echo "$ADC_voltage_scale > 1 "|bc) -eq 1 ] ; then
@@ -199,18 +217,21 @@ board_id() {
 	SOC_type=$(cat /proc/device-tree/compatible | cut -d,  -f 3)
 	echo "SOC_type:"$SOC_type
 
-	ADC_CH2_RAW=$(cat /sys/bus/iio/devices/iio\:device0/in_voltage2_raw)
-	echo "ADC_CH2_RAW:"$ADC_CH2_RAW
-	ADC_CH3_RAW=$(cat /sys/bus/iio/devices/iio\:device0/in_voltage3_raw)
-	echo "ADC_CH3_RAW:"$ADC_CH3_RAW
+	if [[ "$SOC_type" == "rk3128" ]]; then
+		get_index 0
+		ADC_INDEX_H=$INDEX
 
-	get_index $ADC_CH2_RAW
-	ADC_CH2_INDEX=$INDEX
+		get_index 2
+		ADC_INDEX_L=$INDEX
+	else
+		get_index 2
+		ADC_INDEX_H=$INDEX
 
-	get_index $ADC_CH3_RAW
-	ADC_CH3_INDEX=$INDEX
+		get_index 3
+		ADC_INDEX_L=$INDEX
+	fi
 
-	BOARD_ID=$ADC_CH2_INDEX$ADC_CH3_INDEX
+	BOARD_ID=$ADC_INDEX_H$ADC_INDEX_L
 	echo "BOARD_ID:"$BOARD_ID
 }
 
@@ -232,11 +253,14 @@ if [ ! -e "/boot/boot_init" ] ; then
 				case $x in
 				root=*)
 					Root_Part=${x#root=}
-					Boot_Part="${Root_Part::-2}"p2
 					;;
+				boot_part=*)
+					Boot_Part_Num=${x#boot_part=}
+					;;				
 				esac
 			done
 
+			Boot_Part="${Root_Part::-1}${Boot_Part_Num}"
 			mount "$Boot_Part" /boot
 			echo "$Boot_Part  /boot  auto  defaults  0 2" >> /etc/fstab
 		fi
