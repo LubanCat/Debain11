@@ -8,10 +8,11 @@ if [ ! $SOC ]; then
     echo "please enter soc number:"
     echo "请输入要构建CPU的序号:"
     echo "[0] Exit Menu"
-    echo "[1] rk3528"
-    echo "[1] rk3562"
-    echo "[1] rk3566/rk3568"
-    echo "[2] rk3588/rk3588s"
+    echo "[1] rk3128"
+    echo "[2] rk3528"
+    echo "[3] rk3562"
+    echo "[4] rk3566/rk3568"
+    echo "[5] rk3588/rk3588s"
     echo "---------------------------------------------------------"
     read input
 
@@ -19,15 +20,18 @@ if [ ! $SOC ]; then
         0)
             exit;;
         1)
-            SOC=rk3528
+            SOC=rk3128
             ;;
         2)
-            SOC=rk3562
+            SOC=rk3528
             ;;
         3)
-            SOC=rk356x
+            SOC=rk3562
             ;;
         4)
+            SOC=rk356x
+            ;;
+        5)
             SOC=rk3588
             ;;
         *)
@@ -194,7 +198,7 @@ export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 echo -e "\033[47;36m ---------- LubanCat -------- \033[0m"
 if [ $MIRROR ]; then
-    \${APT_INSTALL} fire-config
+	\${APT_INSTALL} fire-config fire-config-gui lbc-test
 fi
 
 \${APT_INSTALL} toilet mpv u-boot-tools edid-decode logrotate stress
@@ -216,16 +220,16 @@ systemctl disable apt-daily-upgrade.service
 # set localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 if [[ "$TARGET" == "gnome" ]]; then
-    \${APT_INSTALL} fire-config-gui
+    \${APT_INSTALL}
     #Desktop background picture
     # ln -sf /usr/share/images/desktop-base/lubancat-wallpaper.png /etc/alternatives/desktop-background
 elif [[ "$TARGET" == "xfce" ]]; then
-    \${APT_INSTALL} fire-config-gui
+    \${APT_INSTALL}
     #Desktop background picture
     chown -hR cat:cat /home/cat/.config
     ln -sf /usr/share/images/desktop-base/lubancat-wallpaper.png /etc/alternatives/desktop-background
 elif [[ "$TARGET" == "lxde" ]]; then
-    \${APT_INSTALL} fire-config-gui
+    \${APT_INSTALL}
     #Desktop background picture
     # ln -sf /usr/share/desktop-base/images/lubancat-wallpaper.png 
 elif [ "$TARGET" == "lite" ]; then
