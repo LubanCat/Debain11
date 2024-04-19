@@ -163,6 +163,9 @@ if [ "$VERSION" == "debug" ]; then
     sudo cp -rpf overlay-debug/* $TARGET_ROOTFS_DIR/
 fi
 
+# Prevent dpkg interactive dialogues
+export DEBIAN_FRONTEND=noninteractive
+
 echo -e "\033[47;36m Change root.....................\033[0m"
 ID=$(stat --format %u $TARGET_ROOTFS_DIR)
 
@@ -236,9 +239,9 @@ elif [ "$TARGET" == "lite" ]; then
     \${APT_INSTALL} bluez bluez-tools
 fi
 
-apt install -fy --allow-downgrades /packages/install_packages/*.deb
+\${APT_INSTALL} /packages/install_packages/*.deb
 
-apt install -fy --allow-downgrades /boot/kerneldeb/* || true
+\${APT_INSTALL} /boot/kerneldeb/* || true
 
 echo -e "\033[47;36m ----- power management ----- \033[0m"
 \${APT_INSTALL} pm-utils triggerhappy bsdmainutils
