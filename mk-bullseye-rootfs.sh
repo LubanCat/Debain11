@@ -198,7 +198,7 @@ chmod +x /etc/rc.local
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 echo -e "\033[47;36m ---------- LubanCat -------- \033[0m"
-\${APT_INSTALL} toilet mpv fire-config u-boot-tools edid-decode logrotate
+\${APT_INSTALL} toilet mpv fire-config u-boot-tools edid-decode logrotate lbc-test
 
 pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple setuptools wheel
 pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple python-periphery Adafruit-Blinka
