@@ -350,7 +350,7 @@ fi
 #sed -i "/exit 0/i \ echo 3 > /sys/class/graphics/fb0/blank" /etc/rc.local
 
 # mark package to hold
-apt list --installed | grep -v oldstable | cut -d/ -f1 | xargs apt-mark hold
+apt list --upgradable | cut -d/ -f1 | xargs apt-mark hold
 
 #---------------Custom Script--------------
 systemctl mask systemd-networkd-wait-online.service
