@@ -84,6 +84,7 @@ install_packages() {
         rk3328|rk3528)
         MALI=utgard-450
         ISP=rkisp
+        MIRROR=carp-rk352x
         ;;
         rk3128|rk3036)
         MALI=utgard-400
@@ -92,6 +93,7 @@ install_packages() {
         rk3562)
         MALI=bifrost-g52-g13p0
         ISP=rkaiq_rk3562
+        MIRROR=carp-rk356x
         ;;
         rk356x|rk3566|rk3568)
         MALI=bifrost-g52-g13p0
