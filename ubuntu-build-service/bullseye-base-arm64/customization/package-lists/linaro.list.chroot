@@ -14,7 +14,6 @@ debian-keyring
 file
 gconf2
 gpiod
-initramfs-tools
 initscripts
 input-utils
 idlestat

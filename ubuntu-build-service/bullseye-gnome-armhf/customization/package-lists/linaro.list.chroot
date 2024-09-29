@@ -72,7 +72,6 @@ hardinfo
 i2c-tools
 #idlestat
 ifupdown
-initramfs-tools
 initscripts
 input-utils
 iotop
