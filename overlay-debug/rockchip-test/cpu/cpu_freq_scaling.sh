@@ -1,40 +1,39 @@
 #!/bin/bash
 
 set_cpu_freq() {
-    echo userspace > $1/scaling_governor
-    echo $2 > $1/scaling_setspeed
-    cur=`cat $1/scaling_cur_freq`
-    if [ "$cur" -eq "$2" ];then
-        echo "cpu freq policy:${d##*policy} success change to $cur KHz"
+    local policy_path=$1
+    local target_freq=$2
+    echo userspace > "${policy_path}/scaling_governor"
+    echo "${target_freq}" > "${policy_path}/scaling_setspeed"
+    local cur=$(cat "${policy_path}/scaling_cur_freq")
+    local min=$(cat "${policy_path}/scaling_min_freq")
+    if [[ "$cur" -eq "$target_freq" ]] || [[ "$cur" -le "$min" ]]; then
+        echo "CPU freq policy:${policy_path##*/} successfully changed to ${cur} KHz"
     else
-        echo "cpu freq: failed change to $2 KHz, now $cur KHz"
-	exit
+        echo "Failed to change CPU freq to ${target_freq} KHz, current freq: ${cur} KHz"
+        exit 1
     fi
 }
 
-if [ "$#" -eq "1" ];then
-    for d in /sys/devices/system/cpu/cpufreq/*; do
-        read -a array < $d/scaling_available_frequencies
-        let j=${#array[@]}-1
-        for i in `seq 0 $j`; do
-            if [ "$1" -eq "${array[$i]}" ];then
-                set_cpu_freq $d $1
-                exit
-            fi
+cycle_frequencies() {
+    local end_time=$(( $(date +%s) + 86400 )) # 24 hours from now
+    local cnt=0
+    while [[ $(date +%s) -lt $end_time ]]; do
+        for policy_path in /sys/devices/system/cpu/cpufreq/policy*; do
+            read -ra freqs <<< $(cat "${policy_path}/scaling_available_frequencies")
+            local freq=${freqs[RANDOM % ${#freqs[@]}]}
+            echo -n "Cycle: $cnt, "
+            set_cpu_freq "$policy_path" "$freq"
+            ((cnt++))
         done
-        echo "cpu freq: $1 is not in available frequencies: "${array[*]}""
-        echo "cpu freq: now $(cat $d/scaling_cur_freq) Hz"
+        sleep 10 # Sleep for 10 seconds before changing frequencies again
     done
+    echo "24-hour CPU frequency cycle test completed."
+}
+
+# Check for user input to set a specific frequency or cycle frequencies
+if [[ "$#" -eq 1 ]]; then
+    set_cpu_freq "/sys/devices/system/cpu/cpufreq/policy0" "$1"
 else
-    cnt=0
-    RANDOM=$$$(date +%s)
-    while true; do
-        for d in /sys/devices/system/cpu/cpufreq/*; do
-            read -a FREQS < $d/scaling_available_frequencies
-            FREQ=${FREQS[$RANDOM % ${#FREQS[@]} ]}
-            echo -n "cnt: $cnt, "
-            set_cpu_freq $d ${FREQ}
-            let "cnt=$cnt+1"
-        done
-    done
+    cycle_frequencies
 fi

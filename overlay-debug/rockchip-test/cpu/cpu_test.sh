@@ -14,16 +14,16 @@ info_view()
 
 info_view
 echo "*****************************************************"
-echo "stressapptest test:                               1"
-echo "cpu auto scaling:                                 2"
-echo "stressapptest + cpu auto scaling:                 3"
+echo "stress-ng test:                               1"
+echo "cpu auto scaling:                             2"
+echo "stress-ng + cpu auto scaling:                 3"
 echo "*****************************************************"
 
 read -t 30 CPUFREQ_CHOICE
 
 cpu_stress_test()
 {
-	bash ${CURRENT_DIR}/../ddr/stressapptest_test.sh &
+	bash ${CURRENT_DIR}/cpu_stress_test.sh &
 }
 
 cpu_freq_scaling_test()

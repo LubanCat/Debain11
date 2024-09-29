@@ -257,7 +257,7 @@ echo -e "\033[47;36m ----------- RGA  ----------- \033[0m"
 if [[ "$TARGET" == "gnome" || "$TARGET" == "xfce" || "$TARGET" == "lxde" ]]; then
     echo -e "\033[47;36m ------ Setup Video---------- \033[0m"
     \${APT_INSTALL} gstreamer1.0-plugins-bad gstreamer1.0-plugins-base gstreamer1.0-plugins-ugly gstreamer1.0-tools gstreamer1.0-alsa \
-    gstreamer1.0-plugins-base-apps qtmultimedia5-examples
+    gstreamer1.0-plugins-base-apps
 
     \${APT_INSTALL} /packages/mpp/*
     \${APT_INSTALL} /packages/gst-rkmpp/*.deb
@@ -265,7 +265,6 @@ if [[ "$TARGET" == "gnome" || "$TARGET" == "xfce" || "$TARGET" == "lxde" ]]; the
     \${APT_INSTALL} /packages/gst-plugins-base1.0/*.deb
     \${APT_INSTALL} /packages/gst-plugins-bad1.0/*.deb
     \${APT_INSTALL} /packages/gst-plugins-good1.0/*.deb
-    \${APT_INSTALL} /packages/gst-plugins-ugly1.0/*.deb
 elif [ "$TARGET" == "lite" ]; then
     echo -e "\033[47;36m ------ Setup Video---------- \033[0m"
     \${APT_INSTALL} /packages/mpp/*
@@ -285,13 +284,17 @@ elif [[ "$TARGET" == "xfce" || "$TARGET" == "lxde" ]]; then
 fi
 
 if [[ "$TARGET" == "gnome" || "$TARGET" == "xfce" || "$TARGET" == "lxde" ]]; then
+    echo -e "\033[47;36m -- Install Wayland/Weston -- \033[0m"
+    \${APT_INSTALL} /packages/weston/*.deb
+    \${APT_INSTALL} /packages/wayland/*.deb
+
     echo -e "\033[47;36m ----- Install Camera ----- - \033[0m"
     \${APT_INSTALL} cheese v4l-utils
     \${APT_INSTALL} /packages/libv4l/*.deb
     \${APT_INSTALL} /packages/cheese/*.deb
 
     echo -e "\033[47;36m ------ Install openbox ----- \033[0m"
-    \${APT_INSTALL} /packages/openbox/*.deb
+    # \${APT_INSTALL} /packages/openbox/*.deb
 
     echo -e "\033[47;36m ------ update chromium ----- \033[0m"
     \${APT_INSTALL} /packages/chromium/*.deb
@@ -332,9 +335,6 @@ if [[ "$TARGET" == "gnome" || "$TARGET" == "xfce" || "$TARGET" == "lxde" ]]; the
     # set default xinput for fcitx
     sed -i 's/default/fcitx/g' /etc/X11/xinit/xinputrc
 
-    # echo -e "\033[36m Install gl4es.................... \033[0m"
-    # \${APT_INSTALL} /packages/gl4es/*.deb
-
     echo -e "\033[47;36m Install Chinese fonts.................... \033[0m"
     # Uncomment zh_CN.UTF-8 for inclusion in generation
     sed -i 's/^# *\(zh_CN.UTF-8\)/\1/' /etc/locale.gen
@@ -347,8 +347,17 @@ fi
 \${APT_INSTALL} ttf-wqy-zenhei fonts-aenigma
 \${APT_INSTALL} xfonts-intl-chinese
 
+#------------------pipewire------------
+echo -e "\033[36m Install pipewire.................... \033[0m"
+\${APT_INSTALL} pipewire pipewire-pulse pipewire-alsa libspa-0.2-bluetooth
+\${APT_INSTALL} /packages/wireplumber/*.deb
+find /usr/lib/systemd/ -name "wireplumber*.service" | xargs sed -i "/Environment/s/$/ DISPLAY=:0/"
+
 # HACK debian11.3 to fix bug
-\${APT_INSTALL} fontconfig --reinstall
+# \${APT_INSTALL} fontconfig --reinstall
+
+#\${APT_INSTALL} xfce4
+#ln -sf /usr/bin/startxfce4 /etc/alternatives/x-session-manager
 
 # HACK to disable the kernel logo on bootup
 #sed -i "/exit 0/i \ echo 3 > /sys/class/graphics/fb0/blank" /etc/rc.local

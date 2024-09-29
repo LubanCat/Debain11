@@ -18,10 +18,8 @@ echo "video test with FPS display demo:				2"
 echo "video max FPS test without display demo:			3"
 echo "multivideo test:						4"
 echo "gstreamer decode test:					5"
-echo "mpv player decode test:					6"
-echo "parole player decode test:				7"
-echo "qt player decode test:					8"
-echo "gstreamer encode test:					9"
+echo "parole player decode test:				6"
+echo "gstreamer encode test:					7"
 echo "***********************************************************"
 
 read -t 30 VIDEO_CHOICE
@@ -51,19 +49,9 @@ gst_dec_test()
 	bash ${DIR_VIDEO}/test_dec-gst.sh
 }
 
-mpv_dec_test()
-{
-	bash ${DIR_VIDEO}/test_dec-mpv.sh
-}
-
 parole_dec_test()
 {
 	bash ${DIR_VIDEO}/test_dec-parole.sh
-}
-
-qt_dec_test()
-{
-	bash ${DIR_VIDEO}/test_dec-qt.sh arm64
 }
 
 gst_enc_test()
@@ -88,15 +76,9 @@ case ${VIDEO_CHOICE} in
 		gst_dec_test
 		;;
 	6)
-		mpv_dec_test
-		;;
-	7)
 		parole_dec_test
 		;;
-	8)
-		qt_dec_test
-		;;
-	9)
+	7)
 		gst_enc_test
 		;;
 	*)
