@@ -30,6 +30,7 @@ install_packages() {
 		MALI=utgard-450
 		ISP=rkisp
 		sed -i "s/always/none/g" /etc/X11/xorg.conf.d/20-modesetting.conf
+        sed -i '/libdrm-cursor.so.1/d' /usr/bin/X
 		;;
         rk3326|px30)
 		MALI=bifrost-g31-g13p0
