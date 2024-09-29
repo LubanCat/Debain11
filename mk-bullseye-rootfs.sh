@@ -208,8 +208,8 @@ fi
 
 \${APT_INSTALL} toilet mpv u-boot-tools edid-decode logrotate stress
 
-pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple setuptools wheel
-pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple python-periphery Adafruit-Blinka
+# pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple setuptools wheel
+# pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple python-periphery Adafruit-Blinka
 
 passwd root <<IEOF
 root
@@ -332,7 +332,6 @@ if [[ "$TARGET" == "gnome" || "$TARGET" == "xfce" || "$TARGET" == "lxde" ]]; the
     # set default xinput for fcitx
     sed -i 's/default/fcitx/g' /etc/X11/xinit/xinputrc
 
-    #------------------gl4es------------
     # echo -e "\033[36m Install gl4es.................... \033[0m"
     # \${APT_INSTALL} /packages/gl4es/*.deb
 
