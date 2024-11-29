@@ -135,7 +135,6 @@ can-utils
 cmake
 git
 gstreamer1.0-plugins-ugly
-libc++1
 libgtk-3-dev
 libgtk2.0-dev
 nautilus

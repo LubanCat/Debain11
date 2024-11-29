@@ -112,7 +112,6 @@ x11-utils
 x11-xserver-utils
 xserver-xorg-input-evdev
 #xserver-xorg-video-fbdev
-libc++1
 libgtk-3-dev
 libgtk2.0-dev
 #gnome-system-tools
