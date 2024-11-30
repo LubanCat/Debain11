@@ -19,6 +19,11 @@ board_info() {
                 BOARD_DTB='rk3566-lubancat-1io.dtb'
                 BOARD_uEnv='uEnvLubanCat1IO.txt'
                 ;;
+            0007)
+                BOARD_NAME='LubanCat-1IO-test'
+                BOARD_DTB='rk3566-lubancat-1io-test.dtb'
+                BOARD_uEnv='uEnvLubanCat1IO-test.txt'
+                ;;
             0100)
                 BOARD_NAME='LubanCat-1N'
                 BOARD_DTB='rk3566-lubancat-1n.dtb'
@@ -59,6 +64,11 @@ board_info() {
                 BOARD_DTB='rk3568-lubancat-2-v2.dtb'
                 BOARD_uEnv='uEnvLubanCat2-V2.txt'
                 ;;
+			0404)
+				BOARD_NAME='LubanCat-2 v3'
+				BOARD_DTB='rk3568-lubancat-2-v3.dtb'
+				BOARD_uEnv='uEnvLubanCat2-V3.txt'
+				;;
             0500 |\
             0600)
                 BOARD_NAME='LubanCat-2N'
