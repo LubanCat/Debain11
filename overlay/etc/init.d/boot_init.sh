@@ -49,6 +49,11 @@ board_info() {
                 BOARD_DTB='rk3566-lubancat-0.dtb'
                 BOARD_uEnv='uEnvLubanCatZW.txt'
                 ;;
+            0304)
+                BOARD_NAME='LubanCat-CM4'
+                BOARD_DTB='rk3566-lubancat-cm4.dtb'
+                BOARD_uEnv='uEnvLubanCatCM4.txt'
+                ;;
             0400)
                 BOARD_NAME='LubanCat-2'
                 BOARD_DTB='rk3568-lubancat-2.dtb'
@@ -64,11 +69,11 @@ board_info() {
                 BOARD_DTB='rk3568-lubancat-2-v2.dtb'
                 BOARD_uEnv='uEnvLubanCat2-V2.txt'
                 ;;
-			0404)
-				BOARD_NAME='LubanCat-2 v3'
-				BOARD_DTB='rk3568-lubancat-2-v3.dtb'
-				BOARD_uEnv='uEnvLubanCat2-V3.txt'
-				;;
+            0404)
+                BOARD_NAME='LubanCat-2 v3'
+                BOARD_DTB='rk3568-lubancat-2-v3.dtb'
+                BOARD_uEnv='uEnvLubanCat2-V3.txt'
+                ;;
             0500 |\
             0600)
                 BOARD_NAME='LubanCat-2N'
@@ -97,25 +102,11 @@ board_info() {
                 ;;
             *)
                 echo "Device ID Error !!!"
-                BOARD_NAME='LubanCat-series.dtb'
-                BOARD_DTB='rk356x-lubancat-rk_series.dtb'
-                BOARD_uEnv='uEnvLubanCat-series.txt'
+                BOARD_NAME='LubanCat-RK356X'
+                BOARD_DTB='rk356x-lubancat-generic.dtb'
+                BOARD_uEnv='uEnvLubanCat.txt'
                 ;;
         esac
-    elif [[ "$2" == "rk3562" ]]; then
-		case $1 in
-            0000)
-                BOARD_NAME='LubanCat-A2IO'
-                BOARD_DTB='rk3562-lubancat-a2io.dtb'
-                BOARD_uEnv='uEnvLubanCatA2IO.txt'
-                ;;
-			*)
-				echo "Device ID Error !!!"
-				BOARD_NAME='LubanCat-series.dtb'
-				BOARD_DTB='rk3562-lubancat-rk_series.dtb'
-				BOARD_uEnv='uEnvLubanCat-series.txt'
-				;;	
-		esac
     elif [[ "$2" == "rk3588" ||  "$2" == "rk3588s" ]]; then
             case $1 in
             0101)
@@ -143,6 +134,11 @@ board_info() {
                 BOARD_DTB='rk3588-lubancat-5.dtb'
                 BOARD_uEnv='uEnvLubanCat5.txt'
                 ;;
+            0402)
+                BOARD_NAME='LubanCat-5 v2'
+                BOARD_DTB='rk3588-lubancat-5-v2.dtb'
+                BOARD_uEnv='uEnvLubanCat5-V2.txt'
+                ;;
             0501)
                 BOARD_NAME='LubanCat-5IOF'
                 BOARD_DTB='rk3588-lubancat-5io.dtb'
@@ -155,9 +151,9 @@ board_info() {
                 ;;
             *)
                 echo "Device ID Error !!!"
-                BOARD_NAME='LubanCat-series.dtb'
-                BOARD_DTB='rk3588-lubancat-rk_series.dtb'
-                BOARD_uEnv='uEnvLubanCat-series.txt'
+                BOARD_NAME='LubanCat-RK3588'
+                BOARD_DTB='rk3588-lubancat-generic.dtb'
+                BOARD_uEnv='uEnvLubanCat.txt'
                 ;;
         esac
     fi
@@ -168,10 +164,14 @@ board_info() {
 }
 
 # voltage_scale
-# 1.7578125 8bit
-# 0.439453125 12bit
+# 1.7578125 1.8v/10bit
+# 3.222656250 3.3v/10bit
+# 0.439453125 1.8v/12bit
+# 0.8056640625 3.3v/12bit
 get_index(){
-    ADC_RAW=$1
+
+    ADC_RAW=$(cat /sys/bus/iio/devices/iio\:device0/in_voltage${1}_raw)
+    echo ADC_CH:$1 ADC_RAW:$ADC_RAW
     INDEX=0xff
 
     if [ $(echo "$ADC_voltage_scale > 1 "|bc) -eq 1 ] ; then
@@ -192,21 +192,24 @@ board_id() {
     ADC_voltage_scale=$(cat /sys/bus/iio/devices/iio\:device0/in_voltage_scale)
     echo "ADC_voltage_scale:"$ADC_voltage_scale
 
-    SOC_type=$(cat /proc/device-tree/compatible | cut -d,  -f 3)
+    SOC_type=$(cat /proc/device-tree/compatible | cut -d,  -f 3 | sed 's/\x0//g')
     echo "SOC_type:"$SOC_type
 
-    ADC_CH2_RAW=$(cat /sys/bus/iio/devices/iio\:device0/in_voltage2_raw)
-    echo "ADC_CH2_RAW:"$ADC_CH2_RAW
-    ADC_CH3_RAW=$(cat /sys/bus/iio/devices/iio\:device0/in_voltage3_raw)
-    echo "ADC_CH3_RAW:"$ADC_CH3_RAW
+    if [[ "$SOC_type" == "rk3128" ]]; then
+        get_index 0
+        ADC_INDEX_H=$INDEX
 
-    get_index $ADC_CH2_RAW
-    ADC_CH2_INDEX=$INDEX
+        get_index 2
+        ADC_INDEX_L=$INDEX
+    else
+        get_index 2
+        ADC_INDEX_H=$INDEX
 
-    get_index $ADC_CH3_RAW
-    ADC_CH3_INDEX=$INDEX
+        get_index 3
+        ADC_INDEX_L=$INDEX
+    fi
 
-    BOARD_ID=$ADC_CH2_INDEX$ADC_CH3_INDEX
+    BOARD_ID=$ADC_INDEX_H$ADC_INDEX_L
     echo "BOARD_ID:"$BOARD_ID
 }
 
