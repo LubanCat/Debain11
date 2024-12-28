@@ -347,11 +347,10 @@ fi
 \${APT_INSTALL} ttf-wqy-zenhei fonts-aenigma
 \${APT_INSTALL} xfonts-intl-chinese
 
-#------------------pipewire------------
 echo -e "\033[36m Install pipewire.................... \033[0m"
-\${APT_INSTALL} pipewire pipewire-pulse pipewire-alsa libspa-0.2-bluetooth
-\${APT_INSTALL} /packages/wireplumber/*.deb
-find /usr/lib/systemd/ -name "wireplumber*.service" | xargs sed -i "/Environment/s/$/ DISPLAY=:0/"
+# \${APT_INSTALL} pipewire pipewire-pulse pipewire-alsa libspa-0.2-bluetooth
+# \${APT_INSTALL} /packages/wireplumber/*.deb
+# find /usr/lib/systemd/ -name "wireplumber*.service" | xargs sed -i "/Environment/s/$/ DISPLAY=:0/"
 
 # HACK debian11.3 to fix bug
 # \${APT_INSTALL} fontconfig --reinstall
