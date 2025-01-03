@@ -17,25 +17,13 @@ if [ ! $SOC ]; then
     read input
 
     case $input in
-        0)
-            exit;;
-        1)
-            SOC=rk3128
-            ;;
-        2)
-            SOC=rk3528
-            ;;
-        3)
-            SOC=rk3562
-            ;;
-        4)
-            SOC=rk356x
-            ;;
-        5)
-            SOC=rk3588
-            ;;
-        *)
-            echo 'input soc number error, exit !'
+        0)  exit ;;
+        1)  SOC=rk3128 ;;
+        2)  SOC=rk3528 ;;
+        3)  SOC=rk3562 ;;
+        4)  SOC=rk356x ;;
+        5)  SOC=rk3588 ;;
+        *)  echo 'input soc number error, exit !'
             exit;;
     esac
     echo -e "\033[47;36m set SOC=$SOC...... \033[0m"
@@ -54,22 +42,12 @@ if [ ! $TARGET ]; then
     read input
 
     case $input in
-        0)
-            exit;;
-        1)
-            TARGET=xfce
-            ;;
-        2)
-            TARGET=lxde
-            ;;
-        3)
-            TARGET=gnome
-            ;;
-        4)
-            TARGET=lite
-            ;;
-        *)
-            echo -e "\033[47;36m input TARGET version number error, exit ! \033[0m"
+        0)  exit ;;
+        1) TARGET=xfce ;;
+        2) TARGET=lxde ;;
+        3) TARGET=gnome ;;
+        4) TARGET=lite  ;;
+        *)  echo -e "\033[47;36m input TARGET version number error, exit ! \033[0m"
             exit;;
     esac
     echo -e "\033[47;36m set TARGET=$TARGET...... \033[0m"
@@ -141,8 +119,8 @@ sudo cp -rpf packages/$ARCH/* $TARGET_ROOTFS_DIR/packages
 #GPU/CAMERA packages folder
 install_packages
 sudo mkdir -p $TARGET_ROOTFS_DIR/packages/install_packages
-sudo cp -rpf packages/$ARCH/libmali/libmali-*$MALI*-x11*.deb $TARGET_ROOTFS_DIR/packages/install_packages
-sudo cp -rpf packages/$ARCH/${ISP:0:5}/camera_engine_$ISP*.deb $TARGET_ROOTFS_DIR/packages/install_packages
+sudo cp -rpfv packages/$ARCH/libmali/libmali-*$MALI*-x11*.deb $TARGET_ROOTFS_DIR/packages/install_packages
+sudo cp -rpfv packages/$ARCH/${ISP:0:5}/camera_engine_$ISP*.deb $TARGET_ROOTFS_DIR/packages/install_packages
 
 #linux kernel deb
 if [ -e ../linux-headers* ]; then
@@ -186,11 +164,12 @@ ln -sf /run/resolvconf/resolv.conf /etc/resolv.conf
 echo "deb http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib" >> /etc/apt/sources.list
 echo "deb-src http://mirrors.ustc.edu.cn/debian/ bullseye-backports main contrib" >> /etc/apt/sources.list
 
+# Add embedfire packages source
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://Embedfire.github.io/keyfile | gpg --dearmor -o /etc/apt/keyrings/embedfire.gpg
+chmod a+r /etc/apt/keyrings/embedfire.gpg
+echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian carp-lbc main" | tee /etc/apt/sources.list.d/embedfire-lbc.list > /dev/null
 if [ $MIRROR ]; then
-    mkdir -p /etc/apt/keyrings
-    curl -fsSL https://Embedfire.github.io/keyfile | gpg --dearmor -o /etc/apt/keyrings/embedfire.gpg
-    chmod a+r /etc/apt/keyrings/embedfire.gpg
-    echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian carp-lbc main" | tee /etc/apt/sources.list.d/embedfire-lbc.list > /dev/null
     echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/embedfire.gpg] https://cloud.embedfire.com/mirrors/ebf-debian $MIRROR main" | tee /etc/apt/sources.list.d/embedfire-$MIRROR.list > /dev/null
 fi
 
@@ -202,11 +181,8 @@ apt-get upgrade -y
 export APT_INSTALL="apt-get install -fy --allow-downgrades"
 
 echo -e "\033[47;36m ---------- LubanCat -------- \033[0m"
-if [ $MIRROR ]; then
-	\${APT_INSTALL} fire-config fire-config-gui lbc-test
-fi
 
-\${APT_INSTALL} toilet mpv u-boot-tools edid-decode logrotate stress
+\${APT_INSTALL} toilet mpv u-boot-tools edid-decode logrotate stress fire-config lbc-test
 
 # pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple setuptools wheel
 # pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple python-periphery Adafruit-Blinka
@@ -225,16 +201,16 @@ systemctl disable apt-daily-upgrade.service
 # set localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 if [[ "$TARGET" == "gnome" ]]; then
-    \${APT_INSTALL}
+    \${APT_INSTALL} fire-config-gui
     #Desktop background picture
     # ln -sf /usr/share/images/desktop-base/lubancat-wallpaper.png /etc/alternatives/desktop-background
 elif [[ "$TARGET" == "xfce" ]]; then
-    \${APT_INSTALL}
+    \${APT_INSTALL} fire-config-gui
     #Desktop background picture
     chown -hR cat:cat /home/cat/.config
     ln -sf /usr/share/images/desktop-base/lubancat-wallpaper.png /etc/alternatives/desktop-background
 elif [[ "$TARGET" == "lxde" ]]; then
-    \${APT_INSTALL}
+    \${APT_INSTALL} fire-config-gui
     #Desktop background picture
     # ln -sf /usr/share/desktop-base/images/lubancat-wallpaper.png 
 elif [ "$TARGET" == "lite" ]; then
