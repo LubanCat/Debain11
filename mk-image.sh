@@ -5,7 +5,7 @@ TARGET_ROOTFS_DIR=./binary
 if [ $RK_ROOTFS_IMAGE ]; then
 	ROOTFSIMAGE=$RK_ROOTFS_IMAGE
 else
-	ROOTFSIMAGE=linaro-$TARGET-rootfs.img
+	ROOTFSIMAGE=linaro-$SOC-$TARGET-rootfs.img
 fi
 
 echo Making rootfs!
