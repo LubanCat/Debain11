@@ -1,6 +1,17 @@
 #!/bin/bash -e
 
+### BEGIN INIT INFO
+# Provides:          LubanCat
+# Required-Start:
+# Required-Stop:
+# Default-Start:
+# Default-Stop:
+# Short-Description:
+# Description:       This script initializes custom services or configurations at boot time.
+### END INIT INFO
+
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 board_info() {
 	if [[ "$2" == "rk3128" ]]; then
 		case $1 in
@@ -25,8 +36,8 @@ board_info() {
 				;;
 			0002)
 				BOARD_NAME='LubanCat-Q1IO'
-                                BOARD_DTB='rk3528-lubancat-q1io.dtb'
-                                BOARD_uEnv='uEnvLubanCatQ1IO.txt'
+				BOARD_DTB='rk3528-lubancat-q1io.dtb'
+				BOARD_uEnv='uEnvLubanCatQ1IO.txt'
 				;;
 			*)
 				echo "Device ID Error !!!"
@@ -39,6 +50,11 @@ board_info() {
 		case $1 in
 			0000)
 				BOARD_NAME='LubanCat-1HS'
+				BOARD_DTB='rk3562-lubancat-1hs.dtb'
+				BOARD_uEnv='uEnvLubanCat1HS.txt'
+				;;
+			0100)
+				BOARD_NAME='LubanCat-1HSI'
 				BOARD_DTB='rk3562-lubancat-1hs.dtb'
 				BOARD_uEnv='uEnvLubanCat1HS.txt'
 				;;
@@ -66,11 +82,11 @@ board_info() {
 				BOARD_DTB='rk3566-lubancat-1io.dtb'
 				BOARD_uEnv='uEnvLubanCat1IO.txt'
 				;;
-            0007)
-                BOARD_NAME='LubanCat-1IO-test'
-                BOARD_DTB='rk3566-lubancat-1io-test.dtb'
-                BOARD_uEnv='uEnvLubanCat1IO-test.txt'
-                ;;
+			0007)
+				BOARD_NAME='LubanCat-1IO-test'
+				BOARD_DTB='rk3566-lubancat-1io-test.dtb'
+				BOARD_uEnv='uEnvLubanCat1IO-test.txt'
+				;;
 			0100)
 				BOARD_NAME='LubanCat-1N'
 				BOARD_DTB='rk3566-lubancat-1n.dtb'
@@ -95,6 +111,11 @@ board_info() {
 				BOARD_NAME='LubanCat-0W'
 				BOARD_DTB='rk3566-lubancat-0.dtb'
 				BOARD_uEnv='uEnvLubanCatZW.txt'
+				;;
+			0304)
+				BOARD_NAME='LubanCat-CM4'
+				BOARD_DTB='rk3566-lubancat-cm4.dtb'
+				BOARD_uEnv='uEnvLubanCatCM4.txt'
 				;;
 			0400)
 				BOARD_NAME='LubanCat-2'
@@ -126,6 +147,11 @@ board_info() {
 				BOARD_NAME='LubanCat-2N v2'
 				BOARD_DTB='rk3568-lubancat-2n-v2.dtb'
 				BOARD_uEnv='uEnvLubanCat2N-V2.txt'
+				;;
+			0502)
+				BOARD_NAME='LubanCat-2N v3'
+				BOARD_DTB='rk3568-lubancat-2n-v3.dtb'
+				BOARD_uEnv='uEnvLubanCat2N-V3.txt'
 				;;
 			0601)
 				BOARD_NAME='LubanCat-2H'
@@ -207,7 +233,7 @@ board_info() {
 
 # voltage_scale
 # 1.7578125 1.8v/10bit
-# 3.222656250 3.3v/10bit 
+# 3.222656250 3.3v/10bit
 # 0.439453125 1.8v/12bit
 # 0.8056640625 3.3v/12bit
 get_index(){
@@ -238,17 +264,11 @@ board_id() {
 	echo "SOC_type:"$SOC_type
 
 	if [[ "$SOC_type" == "rk3128" ]]; then
-		get_index 0
-		ADC_INDEX_H=$INDEX
-
-		get_index 2
-		ADC_INDEX_L=$INDEX
+		get_index 0; ADC_INDEX_H=$INDEX
+		get_index 2; ADC_INDEX_L=$INDEX
 	else
-		get_index 2
-		ADC_INDEX_H=$INDEX
-
-		get_index 3
-		ADC_INDEX_L=$INDEX
+		get_index 2; ADC_INDEX_H=$INDEX
+		get_index 3; ADC_INDEX_L=$INDEX
 	fi
 
 	BOARD_ID=$ADC_INDEX_H$ADC_INDEX_L
@@ -276,7 +296,7 @@ if [ ! -e "/boot/boot_init" ] ; then
 					;;
 				boot_part=*)
 					Boot_Part_Num=${x#boot_part=}
-					;;				
+					;;
 				esac
 			done
 
